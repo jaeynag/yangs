@@ -78,15 +78,12 @@
       font-size: 30px;
       border-radius: 50%;
     }
-    .hidden {
-      display: none;
-    }
     /* 오답 팝업 오버레이 */
     #wrong-overlay {
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.35);
-      display: flex;
+      display: none;           /* 처음에는 무조건 안 보이게 */
       justify-content: center;
       align-items: center;
       z-index: 999;
@@ -113,6 +110,9 @@
         margin: 8px;
         padding: 16px;
       }
+    }
+    .hidden {
+      display: none;
     }
   </style>
 </head>
@@ -143,11 +143,10 @@
 </div>
 
 <!-- 오답 팝업 -->
-<div id="wrong-overlay" class="hidden">
+<div id="wrong-overlay">
   <div id="wrong-popup">
     <div id="wrong-popup-message">틀렸어 짜식아~</div>
-    <!-- 버튼 클릭 시 바로 hideWrongPopup 호출 -->
-    <button class="btn small" onclick="hideWrongPopup()">다시 풀기</button>
+    <button class="btn small" id="wrong-popup-close">다시 풀기</button>
   </div>
 </div>
 
@@ -290,6 +289,7 @@
 
   const wrongOverlay = document.getElementById("wrong-overlay");
   const wrongPopupMessage = document.getElementById("wrong-popup-message");
+  const wrongPopupClose = document.getElementById("wrong-popup-close");
 
   let currentList = [];
   let currentIndex = 0;
@@ -375,17 +375,19 @@
   // ================== 오답 팝업 ==================
   function showWrongPopup(msg) {
     wrongPopupMessage.textContent = msg;
-    wrongOverlay.classList.remove("hidden");
+    wrongOverlay.style.display = "flex";   // 팝업 표시
   }
 
   function hideWrongPopup() {
-    wrongOverlay.classList.add("hidden");
+    wrongOverlay.style.display = "none";   // 팝업 숨김
   }
 
   // 오버레이 바깥 클릭 시 닫기
   wrongOverlay.addEventListener("click", (e) => {
     if (e.target === wrongOverlay) hideWrongPopup();
   });
+
+  wrongPopupClose.addEventListener("click", hideWrongPopup);
 
   // ================== 답변 처리 ==================
   function handleAnswer(userAnswer) {
